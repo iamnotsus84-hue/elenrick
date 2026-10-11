@@ -185,7 +185,8 @@
         }
 
         function isTabAuthenticated() {
-            return sessionStorage.getItem('tab_authenticated'] === 'true';
+            // ※前回のコードにあったタイポ（ brackets のミス ）を修正しました
+            return sessionStorage.getItem('tab_authenticated') === 'true';
         }
 
         // titleパラメータがあればタイトルやキーワードを書き換える
@@ -218,7 +219,7 @@
 
         // --- 罠（またはパス認証による回避）の共通トリガー ---
         function triggerTrapOrPass() {
-            // ★【暗号モードの場合】動画を出さず、先ほど作った本物の `gallery.html` へジャンプする！
+            // ★【暗号モードの場合】動画を出さず、本物の `gallery.html` へジャンプする
             if (isTabAuthenticated()) {
                 window.location.href = `gallery.html?q=${encodeURIComponent(currentKeyword)}`;
                 return;
