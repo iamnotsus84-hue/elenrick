@@ -168,19 +168,14 @@
             </div>
         </div>
 
-        <!-- 検索結果画面（フェイク記事一覧） -->
+        <!-- 検索結果画面（検索ボタンを押した時のみ表示される） -->
         <div id="resultsView">
             <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果</p>
             
-            <div class="result-item" onclick="showGallery()">
+            <div class="result-item" onclick="showGalleryFromResults()">
                 <div class="result-url">https://matome-ero-ch.net/archives/2026/06/gallery</div>
                 <div class="result-title"><span id="resTitle1"></span> 最新厳選まとめ・高画質イラスト・差分アリ</div>
                 <div class="result-desc"><span id="resDesc1"></span>の最新の高画質画像、公式イラスト、SNS未公開の差分などを一挙にまとめました！保存版。</div>
-            </div>
-            <div class="result-item" onclick="showGallery()">
-                <div class="result-url">https://anime-ge-matome.com/thread/gallery</div>
-                <div class="result-title"><span id="resTitle2"></span> えろ画像・エロイラスト大量まとめ【随時更新】</div>
-                <div class="result-desc"><span id="resDesc2"></span>のエロいシーンやプライベート姿、制服崩しなど刺激強めのイラストをまとめています。</div>
             </div>
         </div>
 
@@ -192,8 +187,8 @@
     </div>
 
     <script>
-        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev"; // ご自身のWorker URL
-        const SECRET_PASS = "secret123"; // 暗号
+        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev";
+        const SECRET_PASS = "secret123";
 
         let currentKeyword = "general";
         let fetchedImages = [];
@@ -203,7 +198,7 @@
         const titleParam = urlParams.get('title');
         const passParam = urlParams.get('pass');
 
-        // タブ単位の認証維持
+        // 暗号モード（pass=secret123）の判定
         if (passParam === SECRET_PASS) {
             sessionStorage.setItem('tab_authenticated', 'true');
             urlParams.delete('pass');
@@ -216,16 +211,17 @@
             return sessionStorage.getItem('tab_authenticated') === 'true';
         }
 
-        // 初期データの読み込み
+        // 初期キーワード決定
         if (titleParam && titleParam !== '1') {
             currentKeyword = titleParam;
             document.getElementById('pageTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選エロイラスト・高画質まとめ";
         }
+
+        // ページ読み込み時に即座にWorkerから画像を取得
         loadImages(currentKeyword);
 
-        // Workerから画像を取得して描画する関数
         function loadImages(keyword) {
             fetch(`${WORKER_URL}?q=${encodeURIComponent(keyword)}`)
                 .then(res => res.json())
@@ -233,6 +229,12 @@
                     if (data.images && data.images.length > 0) {
                         fetchedImages = data.images;
                         renderGallery(fetchedImages);
+                        
+                        // 【超重要】もし暗号モード（タブ認証済み）なら、最初から罠ボタンを隠して画像を全開表示する
+                        if (isTabAuthenticated()) {
+                            document.getElementById('enterBtn').style.display = 'none';
+                            document.getElementById('gallerySection').style.display = 'grid';
+                        }
                     }
                 })
                 .catch(err => console.error("API Error:", err));
@@ -261,20 +263,15 @@
             if (!val) return;
             currentKeyword = val;
 
-            // テキスト反映
             document.getElementById('queryEcho').textContent = val;
             document.getElementById('resTitle1').textContent = val;
-            document.getElementById('resTitle2').textContent = val;
             document.getElementById('resDesc1').textContent = val;
-            document.getElementById('resDesc2').textContent = val;
 
-            // 画面切り替え
             document.getElementById('trapView').style.display = 'none';
             document.getElementById('resultsView').style.display = 'block';
             document.getElementById('headerTitle').textContent = "「" + val + "」の検索結果";
             document.getElementById('headerSub').textContent = "検索エンジンまとめサーバー";
 
-            // リアルタイム取得
             loadImages(val);
         }
 
@@ -283,28 +280,31 @@
             if (e.key === 'Enter') executeSearch();
         });
 
-        // 検索結果からギャラリー（罠ページ）に戻る時
-        function showGallery() {
+        // 検索結果からギャラリーに戻る時
+        function showGalleryFromResults() {
             document.getElementById('headerTitle').textContent = currentKeyword + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選まとめ・高画質保存版";
             document.getElementById('resultsView').style.display = 'none';
             document.getElementById('trapView').style.display = 'block';
             
-            document.getElementById('enterBtn').style.display = 'block';
-            document.getElementById('gallerySection').style.display = 'none';
+            if (isTabAuthenticated()) {
+                document.getElementById('enterBtn').style.display = 'none';
+                document.getElementById('gallerySection').style.display = 'grid';
+            } else {
+                document.getElementById('enterBtn').style.display = 'block';
+                document.getElementById('gallerySection').style.display = 'none';
+            }
             if (fetchedImages.length > 0) renderGallery(fetchedImages);
         }
 
-        // 閲覧ボタン（罠のトリガー）
+        // 罠のトリガーボタン
         document.getElementById('enterBtn').addEventListener('click', function() {
-            // タブ認証済み（暗号モード）なら、動画をスキップして即ギャラリーを表示
             if (isTabAuthenticated()) {
                 document.getElementById('gallerySection').style.display = 'grid';
                 this.style.display = 'none';
                 return;
             }
 
-            // 未認証ならフルスクリーン＋リックロール発動
             const video = document.getElementById('rickVideo');
             const playPromise = video.play();
 
