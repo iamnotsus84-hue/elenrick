@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>エレン・ジョー エロ画像まとめ</title>
+    <title id="pageTitle">最新イラスト・画像まとめ検索</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -33,6 +33,77 @@
             margin: 0 auto;
             padding: 20px;
         }
+
+        /* 1. 検索画面 */
+        #searchView {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .search-box {
+            display: inline-flex;
+            width: 100%;
+            max-width: 600px;
+            background: #16213e;
+            border: 2px solid #e94560;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            margin-top: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 1.1rem;
+            outline: none;
+        }
+        .search-btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 0 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-btn:hover { background: #c73a52; }
+
+        /* 2. 検索結果画面 */
+        #resultsView { display: none; }
+        .result-item {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #e94560;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .result-item:hover {
+            background: #1f2a48;
+            transform: translateY(-2px);
+        }
+        .result-url {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        .result-title {
+            font-size: 1.2rem;
+            color: #e94560;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-desc {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        /* 3. 罠ページ（まとめサイト風） */
+        #trapView { display: none; }
         .warning-btn {
             display: block;
             width: 100%;
@@ -66,29 +137,11 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        /* 本物の画像を表示するスタイル */
         .card img {
             width: 100%;
             height: 280px;
             object-fit: cover;
             display: block;
-        }
-        .placeholder {
-            height: 280px;
-            background: linear-gradient(45deg, #0f3460, #e94560, #533483);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.7);
-            position: relative;
-        }
-        .placeholder::after {
-            content: "画像読み込み中...";
-            position: absolute;
-            bottom: 10px;
-            font-size: 0.8rem;
-            opacity: 0.6;
         }
         .card-info {
             padding: 12px;
@@ -102,6 +155,7 @@
             font-size: 0.85rem;
             color: #bbb;
         }
+
         /* ブラックアウト＆動画エリア */
         #blackout {
             display: none;
@@ -126,83 +180,4 @@
             <source src="rick-roll-video-meme-template-video-1da252ec.mp4" type="video/mp4">
             お使いのブラウザは動画再生に対応していません。
         </video>
-    </div>
-
-    <header>
-        <h1>エレン・ジョー エロ画像まとめ</h1>
-        <p class="subtitle">Zenless Zone Zero / 最新厳選エロイラスト・AI生成まとめ</p>
-    </header>
-
-    <div class="container" id="content">
-        <!-- 初めはボタンだけ -->
-        <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意　→　クリックして入る</button>
-
-        <!-- ギャラリー全体（初期は非表示） -->
-        <div class="gallery" id="gallerySection" style="display: none;">
-            <!-- 【1番上】120910518-0.jpg -->
-            <div class="card">
-                <img src="120910518-0.jpg" alt="Ellen Joe #01">
-                <div class="card-info">
-                    <h3>特別仕様</h3>
-                    <p>完全新規描き下ろし</p>
-                </div>
-            </div>
-            <!-- 【下2番目】IMG_c8e4e718-d4d0-4fe0-b57e-225daedd73b0.jpg -->
-            <div class="card">
-                <img src="IMG_c8e4e718-d4d0-4fe0-b57e-225daedd73b0.jpg" alt="Ellen Joe #02">
-                <div class="card-info">
-                    <h3>プライベート空間</h3>
-                    <p>部屋着・ゆるふわ</p>
-                </div>
-            </div>
-            <!-- 【下3番目】IMG_f38ee226-0c85-49bd-a0c2-49cd9d89d7b7.jpg -->
-            <div class="card">
-                <img src="IMG_f38ee226-0c85-49bd-a0c2-49cd9d89d7b7.jpg" alt="Ellen Joe #03">
-                <div class="card-info">
-                    <h3>バトル後</h3>
-                    <p>汗だく・ダメージ表現</p>
-                </div>
-            </div>
-            <!-- 残りのプレースホルダー -->
-            <div class="card">
-                <div class="placeholder">Ellen Joe #04</div>
-                <div class="card-info">
-                    <h3>水着バージョン</h3>
-                    <p>高画質・透け感強め / 2025年最新</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="placeholder">Ellen Joe #05</div>
-                <div class="card-info">
-                    <h3>制服崩し</h3>
-                    <p>胸強調・太もも重点</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="placeholder">Ellen Joe #06</div>
-                <div class="card-info">
-                    <h3>寝起き姿</h3>
-                    <p>朝の光と肌の質感</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('enterBtn').addEventListener('click', function() {
-            // ボタンを押すとギャラリーがパッと表示される
-            document.getElementById('gallerySection').style.display = 'grid';
-            this.style.display = 'none';
-
-            // ほんの一瞬（約0.3秒後）に見せた後、即座にブラックアウトしてリックロール発動
-            setTimeout(function() {
-                const blackout = document.getElementById('blackout');
-                blackout.style.display = 'flex';
-
-                const video = document.getElementById('rickVideo');
-                video.play().catch(() => {});
-            }, 300); // 300ms（0.3秒）
-        });
-    </script>
-</body>
-</html>
+    <
