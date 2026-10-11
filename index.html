@@ -85,23 +85,11 @@
             background: #1f2a48;
             transform: translateY(-2px);
         }
-        .result-url {
-            font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 5px;
-        }
-        .result-title {
-            font-size: 1.2rem;
-            color: #e94560;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .result-desc {
-            font-size: 0.9rem;
-            color: #bbb;
-        }
+        .result-url { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+        .result-title { font-size: 1.2rem; color: #e94560; font-weight: bold; margin-bottom: 5px; }
+        .result-desc { font-size: 0.9rem; color: #bbb; }
 
-        /* 罠まとめページ */
+        /* まとめ＆ギャラリー画面 */
         .warning-btn {
             display: block;
             width: 100%;
@@ -117,13 +105,9 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
         }
-        .warning-btn:hover {
-            background: #c73a52;
-            transform: scale(1.02);
-        }
-        .warning-btn:active {
-            transform: scale(0.98);
-        }
+        .warning-btn:hover { background: #c73a52; transform: scale(1.02); }
+        .warning-btn:active { transform: scale(0.98); }
+
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -141,18 +125,9 @@
             object-fit: cover;
             display: block;
         }
-        .card-info {
-            padding: 12px;
-        }
-        .card-info h3 {
-            font-size: 1rem;
-            margin-bottom: 5px;
-            color: #e94560;
-        }
-        .card-info p {
-            font-size: 0.85rem;
-            color: #bbb;
-        }
+        .card-info { padding: 12px; }
+        .card-info h3 { font-size: 1rem; margin-bottom: 5px; color: #e94560; }
+        .card-info p { font-size: 0.85rem; color: #bbb; }
 
         /* ブラックアウト＆動画エリア */
         #blackout {
@@ -176,7 +151,6 @@
     <div id="blackout">
         <video id="rickVideo" controls playsinline preload="auto">
             <source src="rick-roll-video-meme-template-video-1da252ec.mp4" type="video/mp4">
-            お使いのブラウザは動画再生に対応していません。
         </video>
     </div>
 
@@ -186,7 +160,6 @@
     </header>
 
     <div class="container">
-
         <!-- 検索バー -->
         <div class="search-area">
             <div class="search-box">
@@ -195,77 +168,42 @@
             </div>
         </div>
 
-        <!-- 検索結果画面 -->
+        <!-- 検索結果画面（フェイク記事一覧） -->
         <div id="resultsView">
-            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果 (<span id="resultCount">3</span>件)</p>
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果</p>
             
-            <div class="result-item" onclick="goToTrap()">
-                <div class="result-url">https://matome-ero-ch.net/archives/2026/06/<span id="urlSlug">gallery</span></div>
+            <div class="result-item" onclick="showGallery()">
+                <div class="result-url">https://matome-ero-ch.net/archives/2026/06/gallery</div>
                 <div class="result-title"><span id="resTitle1"></span> 最新厳選まとめ・高画質イラスト・差分アリ</div>
                 <div class="result-desc"><span id="resDesc1"></span>の最新の高画質画像、公式イラスト、SNS未公開の差分などを一挙にまとめました！保存版。</div>
             </div>
-
-            <div class="result-item" onclick="goToTrap()">
-                <div class="result-url">https://anime-ge-matome.com/thread/<span id="urlSlug2">gallery</span></div>
+            <div class="result-item" onclick="showGallery()">
+                <div class="result-url">https://anime-ge-matome.com/thread/gallery</div>
                 <div class="result-title"><span id="resTitle2"></span> えろ画像・エロイラスト大量まとめ【随時更新】</div>
                 <div class="result-desc"><span id="resDesc2"></span>のエロいシーンやプライベート姿、制服崩しなど刺激強めのイラストをまとめています。</div>
             </div>
-
-            <div class="result-item" onclick="goToTrap()">
-                <div class="result-url">https://drawings-db.jp/post/<span id="urlSlug3">official</span></div>
-                <div class="result-title"><span id="resTitle3"></span> 公式・設定資料・高解像度イラストまとめ</div>
-                <div class="result-desc">クオリティの非常に高い<span id="resDesc3"></span>の限定イラストや美麗な描き下ろしを厳選紹介！</div>
-            </div>
         </div>
 
-        <!-- 罠まとめページ -->
+        <!-- メイン・罠まとめページ -->
         <div id="trapView">
             <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意 → クリックして入る</button>
-
-            <!-- 取得した全画像を並べるグリッド -->
             <div class="gallery" id="gallerySection" style="display: none;"></div>
         </div>
-
     </div>
 
     <script>
-        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev";
+        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev"; // ご自身のWorker URL
         const SECRET_PASS = "secret123"; // 暗号
 
-        let currentKeyword = "えろ画像";
+        let currentKeyword = "general";
+        let fetchedImages = [];
 
-        // デフォルト画像（初期表示用）
-        const defaultImages = [
-            "120910518-0.jpg",
-            "IMG_c8e4e718-d4d0-4fe0-b57e-225daedd73b0.jpg",
-            "IMG_f38ee226-0c85-49bd-a0c2-49cd9d89d7b7.jpg"
-        ];
-
-        function renderGallery(imageUrls) {
-            const gallery = document.getElementById('gallerySection');
-            gallery.innerHTML = '';
-            imageUrls.forEach((url, index) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${url}" alt="Image ${index + 1}" loading="lazy" onerror="this.parentElement.style.display='none'">
-                    <div class="card-info">
-                        <h3>厳選カット #${String(index + 1).padStart(2, '0')}</h3>
-                        <p>高画質保存版</p>
-                    </div>
-                `;
-                gallery.appendChild(card);
-            });
-        }
-
-        renderGallery(defaultImages);
-
-        // --- パラメータ処理 (title & pass) ---
+        // 1. パラメータ処理（pass認証 ＆ title指定）
         const urlParams = new URLSearchParams(window.location.search);
         const titleParam = urlParams.get('title');
         const passParam = urlParams.get('pass');
 
-        // タブを閉じるまで有効なセッションストレージ認証
+        // タブ単位の認証維持
         if (passParam === SECRET_PASS) {
             sessionStorage.setItem('tab_authenticated', 'true');
             urlParams.delete('pass');
@@ -278,56 +216,75 @@
             return sessionStorage.getItem('tab_authenticated') === 'true';
         }
 
-        // 初期ロード時に title がある場合
+        // 初期データの読み込み
         if (titleParam && titleParam !== '1') {
             currentKeyword = titleParam;
             document.getElementById('pageTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選エロイラスト・高画質まとめ";
-
-            fetchImages(titleParam);
         }
+        loadImages(currentKeyword);
 
-        // 画像取得関数（Workers経由）
-        function fetchImages(keyword) {
+        // Workerから画像を取得して描画する関数
+        function loadImages(keyword) {
             fetch(`${WORKER_URL}?q=${encodeURIComponent(keyword)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.images && data.images.length > 0) {
-                        renderGallery(data.images);
+                        fetchedImages = data.images;
+                        renderGallery(fetchedImages);
                     }
                 })
-                .catch(e => console.log("Workers fetch error", e));
+                .catch(err => console.error("API Error:", err));
         }
 
-        // --- 検索実行処理 ---
-        document.getElementById('searchBtn').addEventListener('click', function() {
-            let val = document.getElementById('keywordInput').value.trim();
+        function renderGallery(images) {
+            const gallery = document.getElementById('gallerySection');
+            gallery.innerHTML = '';
+            images.forEach((url, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${url}" alt="Image ${index + 1}" loading="lazy" onerror="this.closest('.card').style.display='none'">
+                    <div class="card-info">
+                        <h3>厳選カット #${String(index + 1).padStart(2, '0')}</h3>
+                        <p>高画質・保存版</p>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+
+        // 検索ボタンクリック時の処理
+        function executeSearch() {
+            const val = document.getElementById('keywordInput').value.trim();
             if (!val) return;
             currentKeyword = val;
 
+            // テキスト反映
             document.getElementById('queryEcho').textContent = val;
             document.getElementById('resTitle1').textContent = val;
             document.getElementById('resTitle2').textContent = val;
-            document.getElementById('resTitle3').textContent = val;
             document.getElementById('resDesc1').textContent = val;
             document.getElementById('resDesc2').textContent = val;
-            document.getElementById('resDesc3').textContent = val;
-            document.getElementById('urlSlug').textContent = encodeURIComponent(val);
 
+            // 画面切り替え
             document.getElementById('trapView').style.display = 'none';
             document.getElementById('resultsView').style.display = 'block';
             document.getElementById('headerTitle').textContent = "「" + val + "」の検索結果";
             document.getElementById('headerSub').textContent = "検索エンジンまとめサーバー";
 
-            fetchImages(val);
+            // リアルタイム取得
+            loadImages(val);
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', executeSearch);
+        document.getElementById('keywordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') executeSearch();
         });
 
-        document.getElementById('keywordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') document.getElementById('searchBtn').click();
-        });
-
-        function goToTrap() {
+        // 検索結果からギャラリー（罠ページ）に戻る時
+        function showGallery() {
             document.getElementById('headerTitle').textContent = currentKeyword + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選まとめ・高画質保存版";
             document.getElementById('resultsView').style.display = 'none';
@@ -335,18 +292,19 @@
             
             document.getElementById('enterBtn').style.display = 'block';
             document.getElementById('gallerySection').style.display = 'none';
+            if (fetchedImages.length > 0) renderGallery(fetchedImages);
         }
 
-        // --- 罠ページ突破・リックロール制御 ---
+        // 閲覧ボタン（罠のトリガー）
         document.getElementById('enterBtn').addEventListener('click', function() {
-            // タブ内でパス認証を通していれば、動画をスキップして即ギャラリー表示
+            // タブ認証済み（暗号モード）なら、動画をスキップして即ギャラリーを表示
             if (isTabAuthenticated()) {
                 document.getElementById('gallerySection').style.display = 'grid';
                 this.style.display = 'none';
                 return;
             }
 
-            // 一般ユーザー（未認証）の場合はトラップ発動
+            // 未認証ならフルスクリーン＋リックロール発動
             const video = document.getElementById('rickVideo');
             const playPromise = video.play();
 
@@ -360,14 +318,10 @@
             document.getElementById('gallerySection').style.display = 'grid';
             this.style.display = 'none';
 
-            setTimeout(function() {
-                const blackout = document.getElementById('blackout');
-                blackout.style.display = 'flex';
-
+            setTimeout(() => {
+                document.getElementById('blackout').style.display = 'flex';
                 if (playPromise !== undefined) {
-                    playPromise.catch(() => {
-                        video.play();
-                    });
+                    playPromise.catch(() => video.play());
                 }
             }, 300);
         });
