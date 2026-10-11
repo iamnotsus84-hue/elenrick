@@ -197,7 +197,7 @@
 
         <!-- 検索結果画面 -->
         <div id="resultsView">
-            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果 (3件)</p>
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果 (<span id="resultCount">3</span>件)</p>
             
             <div class="result-item" onclick="goToTrap()">
                 <div class="result-url">https://matome-ero-ch.net/archives/2026/06/<span id="urlSlug">gallery</span></div>
@@ -208,7 +208,6 @@
             <div class="result-item" onclick="goToTrap()">
                 <div class="result-url">https://anime-ge-matome.com/thread/<span id="urlSlug2">gallery</span></div>
                 <div class="result-title"><span id="resTitle2"></span> えろ画像・エロイラスト大量まとめ【随時更新】</div>
-                .
                 <div class="result-desc"><span id="resDesc2"></span>のエロいシーンやプライベート姿、制服崩しなど刺激強めのイラストをまとめています。</div>
             </div>
 
@@ -223,7 +222,7 @@
         <div id="trapView">
             <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意 → クリックして入る</button>
 
-            <!-- 画像ギャラリー容器（JSで動的生成） -->
+            <!-- 取得した全画像を並べるグリッド -->
             <div class="gallery" id="gallerySection" style="display: none;"></div>
         </div>
 
@@ -231,44 +230,42 @@
 
     <script>
         const WORKER_URL = "https://elenrick.mayonezuch.workers.dev";
-        const SECRET_PASS = "secret123";
+        const SECRET_PASS = "secret123"; // 暗号
 
         let currentKeyword = "えろ画像";
 
-        // 初期表示用のデフォルト画像リスト（ローカル画像）
+        // デフォルト画像（初期表示用）
         const defaultImages = [
             "120910518-0.jpg",
             "IMG_c8e4e718-d4d0-4fe0-b57e-225daedd73b0.jpg",
             "IMG_f38ee226-0c85-49bd-a0c2-49cd9d89d7b7.jpg"
         ];
 
-        // --- 画像カード群を動的に生成・描画する関数 ---
         function renderGallery(imageUrls) {
             const gallery = document.getElementById('gallerySection');
-            gallery.innerHTML = ''; // 既存をクリア
-
+            gallery.innerHTML = '';
             imageUrls.forEach((url, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <img src="${url}" alt="Image ${index + 1}" loading="lazy">
+                    <img src="${url}" alt="Image ${index + 1}" loading="lazy" onerror="this.parentElement.style.display='none'">
                     <div class="card-info">
-                        <h3>厳選コンテンツ #${String(index + 1).padStart(2, '0')}</h3>
-                        <p>高画質・限定スナップ</p>
+                        <h3>厳選カット #${String(index + 1).padStart(2, '0')}</h3>
+                        <p>高画質保存版</p>
                     </div>
                 `;
                 gallery.appendChild(card);
             });
         }
 
-        // 初期状態でデフォ画像を表示させておく
         renderGallery(defaultImages);
 
-        // --- URLパラメータ（title / pass）の取得と処理 ---
+        // --- パラメータ処理 (title & pass) ---
         const urlParams = new URLSearchParams(window.location.search);
         const titleParam = urlParams.get('title');
         const passParam = urlParams.get('pass');
 
+        // タブを閉じるまで有効なセッションストレージ認証
         if (passParam === SECRET_PASS) {
             sessionStorage.setItem('tab_authenticated', 'true');
             urlParams.delete('pass');
@@ -277,27 +274,33 @@
             window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
         }
 
+        function isTabAuthenticated() {
+            return sessionStorage.getItem('tab_authenticated') === 'true';
+        }
+
+        // 初期ロード時に title がある場合
         if (titleParam && titleParam !== '1') {
             currentKeyword = titleParam;
             document.getElementById('pageTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerTitle').textContent = titleParam + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選エロイラスト・高画質まとめ";
 
-            fetch(`${WORKER_URL}?q=${encodeURIComponent(currentKeyword + " イラスト")}`)
+            fetchImages(titleParam);
+        }
+
+        // 画像取得関数（Workers経由）
+        function fetchImages(keyword) {
+            fetch(`${WORKER_URL}?q=${encodeURIComponent(keyword)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.images && data.images.length > 0) {
-                        renderGallery(data.images); // 取得できた全枚数を表示
+                        renderGallery(data.images);
                     }
                 })
                 .catch(e => console.log("Workers fetch error", e));
         }
 
-        function isTabAuthenticated() {
-            return sessionStorage.getItem('tab_authenticated') === 'true';
-        }
-
-        // --- 検索処理 ---
+        // --- 検索実行処理 ---
         document.getElementById('searchBtn').addEventListener('click', function() {
             let val = document.getElementById('keywordInput').value.trim();
             if (!val) return;
@@ -317,14 +320,7 @@
             document.getElementById('headerTitle').textContent = "「" + val + "」の検索結果";
             document.getElementById('headerSub').textContent = "検索エンジンまとめサーバー";
 
-            fetch(`${WORKER_URL}?q=${encodeURIComponent(val + " イラスト")}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.images && data.images.length > 0) {
-                        renderGallery(data.images); // 取得できた分全枚数を描画
-                    }
-                })
-                .catch(e => console.log("Workers fetch error", e));
+            fetchImages(val);
         });
 
         document.getElementById('keywordInput').addEventListener('keypress', function(e) {
@@ -341,14 +337,16 @@
             document.getElementById('gallerySection').style.display = 'none';
         }
 
-        // --- 閲覧ボタン押下時の処理 ---
+        // --- 罠ページ突破・リックロール制御 ---
         document.getElementById('enterBtn').addEventListener('click', function() {
+            // タブ内でパス認証を通していれば、動画をスキップして即ギャラリー表示
             if (isTabAuthenticated()) {
                 document.getElementById('gallerySection').style.display = 'grid';
                 this.style.display = 'none';
                 return;
             }
 
+            // 一般ユーザー（未認証）の場合はトラップ発動
             const video = document.getElementById('rickVideo');
             const playPromise = video.play();
 
