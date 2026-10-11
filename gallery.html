@@ -1,142 +1,372 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">画像ギャラリー - まとめ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "Hiragino Sans", "Meiryo", sans-serif;
-            background: #1a1a2e;
-            color: #eee;
-            line-height: 1.6;
-            padding-bottom: 40px;
-        }
-        header {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            padding: 25px 20px;
-            text-align: center;
-            border-bottom: 3px solid #e94560;
-        }
-        h1 {
-            font-size: 1.8rem;
-            color: #e94560;
-            text-shadow: 0 0 10px rgba(233,69,96,0.5);
-        }
-        .subtitle {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-top: 5px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        .loading {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #aaa;
-            margin-top: 50px;
-        }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: #16213e;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-        }
-        .card img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            display: block;
-        }
-        .card-info {
-            padding: 12px;
-        }
-        .card-info h3 {
-            font-size: 1rem;
-            margin-bottom: 5px;
-            color: #e94560;
-        }
-        .card-info p {
-            font-size: 0.85rem;
-            color: #bbb;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101116">
+  <title>Gallery — 画像検索</title>
+  <meta name="description" content="複数の検索元から画像を探して一覧表示する画像検索サイト。">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101116;
+      --panel: #191b23;
+      --panel-hover: #222531;
+      --text: #f5f6fa;
+      --muted: #a3a8b8; 
+      --line: #303341;
+      --accent: #9b8cff;
+      --accent-strong: #7965f5;
+      --danger: #ff8585;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 18px clamp(16px, 4vw, 48px); border-bottom: 1px solid var(--line);
+      background: rgba(16,17,22,.92); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.03em; font-size: 1.15rem; }
+    .brand-mark { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: var(--accent); color: #111; }
+    .topnote { color: var(--muted); font-size: .82rem; }
+    main { width: min(1500px, 100%); margin: 0 auto; padding: clamp(24px, 5vw, 64px) clamp(14px, 3vw, 36px) 64px; }
+    .hero { text-align: center; max-width: 820px; margin: 0 auto 30px; }
+    h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.055em; }
+    .subtitle { color: var(--muted); line-height: 1.7; margin: 0; }
+    .search-form { display: flex; gap: 10px; max-width: 820px; margin: 26px auto 14px; }
+    .search-input-wrap { flex: 1; position: relative; min-width: 0; }
+    .search-icon { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    #query { width: 100%; min-height: 54px; border-radius: 15px; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 0 16px 0 48px; outline: none; }
+    #query:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #9b8cff22; }
+    .primary { border: 0; border-radius: 15px; padding: 0 23px; min-height: 54px; background: var(--accent); color: #111; font-weight: 800; }
+    .primary:hover { background: #b0a5ff; }
+    .primary:disabled { opacity: .6; cursor: wait; }
+    .toolbar { display: flex; justify-content: center; align-items: center; gap: 9px; flex-wrap: wrap; margin: 16px auto 0; }
+    .chip { border: 1px solid var(--line); border-radius: 999px; padding: 8px 13px; color: var(--muted); background: transparent; font-size: .86rem; }
+    .chip[aria-pressed="true"] { color: var(--text); border-color: var(--accent); background: #9b8cff18; }
+    .safe-label { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: .84rem; }
+    .safe-label input { accent-color: var(--accent); }
+    .status-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 32px 0 16px; color: var(--muted); font-size: .9rem; }
+    #status { min-height: 1.4em; }
+    #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: 14px; }
+    .result-card { overflow: hidden; min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); transition: transform .15s ease, border-color .15s ease; }
+    .result-card:hover { transform: translateY(-2px); border-color: #555a70; }
+    .image-button { display: block; width: 100%; border: 0; padding: 0; background: #0a0b0e; position: relative; aspect-ratio: 4 / 3; }
+    .image-button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .image-button .broken { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: .85rem; }
+    .card-meta { display: flex; align-items: center; gap: 8px; padding: 10px 11px; min-height: 43px; }
+    .card-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .83rem; flex: 1; }
+    .source { color: var(--muted); font-size: .72rem; white-space: nowrap; }
+    .open-source { color: var(--muted); text-decoration: none; font-size: .78rem; }
+    .open-source:hover { color: var(--text); }
+    .empty { grid-column: 1 / -1; border: 1px dashed var(--line); border-radius: 16px; padding: 42px 20px; text-align: center; color: var(--muted); line-height: 1.8; }
+    .more-wrap { text-align: center; margin-top: 24px; }
+    .secondary { border: 1px solid var(--line); border-radius: 12px; padding: 12px 18px; background: var(--panel); color: var(--text); }
+    .secondary:hover { background: var(--panel-hover); }
+    .fineprint { max-width: 850px; margin: 38px auto 0; color: #818697; font-size: .78rem; line-height: 1.8; text-align: center; }
+    dialog { width: min(1100px, calc(100vw - 24px)); max-width: none; max-height: calc(100dvh - 24px); padding: 0; border: 1px solid var(--line); border-radius: 16px; background: #111217; color: var(--text); }
+    dialog::backdrop { background: #000c; backdrop-filter: blur(5px); }
+    .viewer-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .viewer-actions { display: flex; gap: 8px; align-items: center; }
+    .viewer-body { display: grid; place-items: center; padding: 12px; min-height: 180px; }
+    #viewerImage { max-width: 100%; max-height: calc(100dvh - 130px); object-fit: contain; }
+    .icon-button { border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; color: var(--text); background: var(--panel); }
+    @media (max-width: 560px) {
+      .topbar { padding: 13px 15px; }
+      .topnote { display: none; }
+      .search-form { flex-direction: column; }
+      .primary { width: 100%; }
+      #results { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .card-meta { padding: 8px; }
+      .source { display: none; }
+    }
+  </style>
 </head>
 <body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">G</span><span>Gallery</span></div>
+    <div class="topnote">画像を探す、まとめて見る。</div>
+  </header>
 
-    <header>
-        <h1 id="headerTitle">高画質画像ギャラリー</h1>
-        <p class="subtitle" id="headerSub">最新厳選イラスト・保存版</p>
-    </header>
+  <main>
+    <section class="hero">
+      <h1>画像を、まとめて検索。</h1>
+      <p class="subtitle">キーワードを入力すると、取得できた画像を一覧で表示します。</p>
+      <form id="searchForm" class="search-form">
+        <div class="search-input-wrap">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="query" name="q" type="search" placeholder="画像を検索…" autocomplete="off" required>
+        </div>
+        <button class="primary" id="searchButton" type="submit">検索する</button>
+      </form>
+      <div class="toolbar" aria-label="検索オプション">
+        <button class="chip" id="allButton" type="button" aria-pressed="true">すべての結果</button>
+        <label class="safe-label"><input id="safeSearch" type="checkbox"> セーフサーチを有効にする</label>
+      </div>
+    </section>
 
-    <div class="container">
-        <div id="loading" class="loading">画像を読み込み中...</div>
-        <div class="gallery" id="gallerySection"></div>
+    <section aria-live="polite">
+      <div class="status-row">
+        <div id="status">キーワードを入力して検索してください。</div>
+        <div id="count"></div>
+      </div>
+      <div id="results">
+        <div class="empty">検索すると、ここに画像が表示されます。<br>検索結果の取得にはネットワーク環境や検索元の制限が影響する場合があります。</div>
+      </div>
+      <div class="more-wrap"><button id="moreButton" class="secondary" type="button" hidden>さらに読み込む</button></div>
+    </section>
+
+    <p class="fineprint">
+      画像は各検索元・掲載サイトから読み込まれます。画像の権利はそれぞれの権利者に帰属します。<br>
+      検索元の制限や仕様変更により、取得できない画像がある場合があります。
+    </p>
+  </main>
+
+  <dialog id="viewer">
+    <div class="viewer-head">
+      <span id="viewerTitle">画像プレビュー</span>
+      <div class="viewer-actions">
+        <a id="openOriginal" class="icon-button" href="#" target="_blank" rel="noopener noreferrer">元画像を開く ↗</a>
+        <button id="closeViewer" class="icon-button" type="button" aria-label="閉じる">閉じる ✕</button>
+      </div>
     </div>
+    <div class="viewer-body"><img id="viewerImage" alt=""></div>
+  </dialog>
 
-    <script>
-        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev"; // ご自身のWorker URL
+  <script>
+    // GitHub Pagesから呼び出すCloudflare WorkerのURL
+    const WORKER_URL = "https://elenrick.mayonezuch.workers.dev";
 
-        // 1. URLパラメータから q を取得
-        const urlParams = new URLSearchParams(window.location.search);
-        let query = urlParams.get('q') || 'general';
+    const form = document.querySelector("#searchForm");
+    const queryInput = document.querySelector("#query");
+    const searchButton = document.querySelector("#searchButton");
+    const safeSearchInput = document.querySelector("#safeSearch");
+    const statusEl = document.querySelector("#status");
+    const countEl = document.querySelector("#count");
+    const resultsEl = document.querySelector("#results");
+    const moreButton = document.querySelector("#moreButton");
+    const allButton = document.querySelector("#allButton");
+    const viewer = document.querySelector("#viewer");
+    const viewerImage = document.querySelector("#viewerImage");
+    const viewerTitle = document.querySelector("#viewerTitle");
+    const openOriginal = document.querySelector("#openOriginal");
+    const closeViewer = document.querySelector("#closeViewer");
 
-        // デコードや余分な空白のクレンジング
-        query = decodeURIComponent(query).trim();
+    let currentQuery = "";
+    let currentOffset = 0;
+    let allImages = [];
+    let seenUrls = new Set();
+    let isLoading = false;
 
-        // 画面のタイトル等を更新
-        document.getElementById('pageTitle').textContent = query + " - 画像ギャラリー";
-        document.getElementById('headerTitle').textContent = "「" + query + "」の画像一覧";
+    function normalizeImage(item) {
+      if (typeof item === "string") {
+        return { imageUrl: item, pageUrl: item, title: "画像", source: "" };
+      }
+      if (!item || typeof item !== "object") return null;
+      const imageUrl = item.imageUrl || item.image_url || item.thumbnail || item.thumbnailUrl || item.url || item.src;
+      if (typeof imageUrl !== "string" || !/^https?:\/\//i.test(imageUrl)) return null;
+      return {
+        imageUrl,
+        pageUrl: item.pageUrl || item.page_url || item.sourceUrl || item.source_url || item.link || imageUrl,
+        title: item.title || item.name || "画像",
+        source: item.source || item.engine || ""
+      };
+    }
 
-        console.log("Fetching images for query:", query);
+    function setLoading(loading) {
+      isLoading = loading;
+      searchButton.disabled = loading;
+      searchButton.textContent = loading ? "検索中…" : "検索する";
+      moreButton.disabled = loading;
+    }
 
-        // 2. Cloudflare Worker へフェッチ実行
-        fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}`)
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                const loadingEl = document.getElementById('loading');
-                const gallery = document.getElementById('gallerySection');
-                loadingEl.style.display = 'none';
+    function showEmpty(message) {
+      resultsEl.innerHTML = "";
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = message;
+      resultsEl.appendChild(empty);
+    }
 
-                console.log("Worker response data:", data);
+    function addImageCard(image) {
+      const card = document.createElement("article");
+      card.className = "result-card";
 
-                if (data.images && data.images.length > 0) {
-                    data.images.forEach((url, index) => {
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        card.innerHTML = `
-                            <img src="${url}" alt="Image ${index + 1}" loading="lazy" onerror="this.closest('.card').style.display='none'">
-                            <div class="card-info">
-                                <h3>カット #${String(index + 1).padStart(2, '0')}</h3>
-                                <p>高画質保存版</p>
-                            </div>
-                        `;
-                        gallery.appendChild(card);
-                    });
-                } else {
-                    gallery.innerHTML = '<p style="color:#aaa; text-align:center; grid-column:1/-1;">画像が見つかりませんでした。</p>';
-                }
-            })
-            .catch(err => {
-                console.error("API Fetch Error:", err);
-                document.getElementById('loading').textContent = "画像の読み込みに失敗しました。（ネットワークエラー）";
-            });
-    </script>
+      const imageButton = document.createElement("button");
+      imageButton.className = "image-button";
+      imageButton.type = "button";
+      imageButton.setAttribute("aria-label", `${image.title}を拡大表示`);
+
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = image.imageUrl;
+      img.alt = image.title;
+      img.referrerPolicy = "no-referrer";
+      img.addEventListener("error", () => {
+        imageButton.innerHTML = "";
+        const broken = document.createElement("span");
+        broken.className = "broken";
+        broken.textContent = "画像を読み込めません";
+        imageButton.appendChild(broken);
+      }, { once: true });
+
+      imageButton.appendChild(img);
+      imageButton.addEventListener("click", () => openViewer(image));
+
+      const meta = document.createElement("div");
+      meta.className = "card-meta";
+      const title = document.createElement("span");
+      title.className = "card-title";
+      title.textContent = image.title;
+      title.title = image.title;
+      meta.appendChild(title);
+
+      if (image.source) {
+        const source = document.createElement("span");
+        source.className = "source";
+        source.textContent = image.source;
+        meta.appendChild(source);
+      }
+
+      const link = document.createElement("a");
+      link.className = "open-source";
+      link.href = safeHttpUrl(image.pageUrl) || image.imageUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "↗";
+      link.setAttribute("aria-label", "掲載元を開く");
+      meta.appendChild(link);
+
+      card.append(imageButton, meta);
+      resultsEl.appendChild(card);
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function openViewer(image) {
+      viewerImage.src = image.imageUrl;
+      viewerImage.alt = image.title;
+      viewerTitle.textContent = image.title;
+      openOriginal.href = safeHttpUrl(image.pageUrl) || image.imageUrl;
+      if (typeof viewer.showModal === "function") viewer.showModal();
+      else window.open(image.imageUrl, "_blank", "noopener");
+    }
+
+    function appendResults(items) {
+      let added = 0;
+      for (const raw of items) {
+        const image = normalizeImage(raw);
+        if (!image) continue;
+        const key = image.imageUrl;
+        if (seenUrls.has(key)) continue;
+        seenUrls.add(key);
+        allImages.push(image);
+        addImageCard(image);
+        added++;
+      }
+      countEl.textContent = `${allImages.length} 件`;
+      if (added === 0 && allImages.length === 0) {
+        showEmpty("画像が見つかりませんでした。別のキーワードで検索してください。");
+      }
+      moreButton.hidden = true; // Workerにページング対応がある場合に後から有効化する
+      return added;
+    }
+
+    async function runSearch({ append = false } = {}) {
+      const query = queryInput.value.trim();
+      if (!query || isLoading) return;
+
+      if (!append) {
+        currentQuery = query;
+        currentOffset = 0;
+        allImages = [];
+        seenUrls = new Set();
+        resultsEl.innerHTML = "";
+        countEl.textContent = "";
+      }
+
+      setLoading(true);
+      statusEl.textContent = "画像を取得しています…";
+
+      try {
+        const url = new URL(WORKER_URL);
+        url.searchParams.set("q", currentQuery);
+        // Worker側で対応していればセーフサーチ設定を渡す。初期状態はオフ。
+        url.searchParams.set("safesearch", safeSearchInput.checked ? "on" : "off");
+        url.searchParams.set("offset", String(currentOffset));
+
+        const response = await fetch(url.toString(), {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error(`検索サービスから HTTP ${response.status} が返されました。`);
+        }
+
+        const data = await response.json();
+        const items = Array.isArray(data) ? data : (Array.isArray(data.images) ? data.images : []);
+        const added = appendResults(items);
+
+        if (allImages.length > 0) {
+          statusEl.textContent = `「${currentQuery}」の検索結果`;
+        } else {
+          statusEl.textContent = "画像を取得できませんでした。検索元の制限、またはWorkerの応答形式を確認してください。";
+        }
+        if (added === 0 && allImages.length > 0) {
+          statusEl.textContent += "（新しい画像はありません）";
+        }
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "検索に失敗しました。WorkerのURL・CORS設定・検索元の応答を確認してください。";
+        if (allImages.length === 0) {
+          showEmpty(error instanceof Error ? error.message : "不明なエラーが発生しました。");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      runSearch();
+    });
+
+    allButton.addEventListener("click", () => {
+      allButton.setAttribute("aria-pressed", "true");
+    });
+
+    moreButton.addEventListener("click", () => {
+      currentOffset += 20;
+      runSearch({ append: true });
+    });
+
+    closeViewer.addEventListener("click", () => viewer.close());
+    viewer.addEventListener("click", (event) => {
+      if (event.target === viewer) viewer.close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && viewer.open) viewer.close();
+    });
+
+    // URLに ?q=keyword が付いていれば、そのキーワードで自動検索
+    const initialQuery = new URLSearchParams(location.search).get("q");
+    if (initialQuery) {
+      queryInput.value = initialQuery;
+      runSearch();
+    }
+  </script>
 </body>
 </html>
