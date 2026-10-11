@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">最新イラスト・画像まとめ検索</title>
+    <title id="pageTitle">えろ画像まとめサイト</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -34,10 +34,10 @@
             padding: 20px;
         }
 
-        /* 1. 検索画面 */
-        #searchView {
+        /* 検索バー */
+        .search-area {
+            margin-bottom: 20px;
             text-align: center;
-            padding: 40px 20px;
         }
         .search-box {
             display: inline-flex;
@@ -48,30 +48,29 @@
             border-radius: 30px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            margin-top: 20px;
         }
         .search-input {
             flex: 1;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border: none;
             background: transparent;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1rem;
             outline: none;
         }
         .search-btn {
             background: #e94560;
             color: white;
             border: none;
-            padding: 0 30px;
+            padding: 0 25px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: background 0.2s;
         }
         .search-btn:hover { background: #c73a52; }
 
-        /* 2. 検索結果画面 */
+        /* 検索結果画面 */
         #resultsView { display: none; }
         .result-item {
             background: #16213e;
@@ -102,8 +101,7 @@
             color: #bbb;
         }
 
-        /* 3. 罠ページ（まとめサイト風） */
-        #trapView { display: none; }
+        /* 罠まとめページ */
         .warning-btn {
             display: block;
             width: 100%;
@@ -176,41 +174,41 @@
 </head>
 <body>
     <div id="blackout">
-        <video id="rickVideo" controls playsinline>
+        <video id="rickVideo" controls playsinline preload="auto">
             <source src="rick-roll-video-meme-template-video-1da252ec.mp4" type="video/mp4">
             お使いのブラウザは動画再生に対応していません。
         </video>
     </div>
 
     <header>
-        <h1 id="headerTitle">イメ活！ - アニメ・ゲーム画像まとめ検索</h1>
-        <p class="subtitle" id="headerSub">お気に入りのキャラクターを高画質で検索</p>
+        <h1 id="headerTitle">えろ画像まとめサイト</h1>
+        <p class="subtitle" id="headerSub">最新厳選アダルトイラスト・AI生成まとめ</p>
     </header>
 
     <div class="container">
 
-        <!-- ================= 1. 検索画面 ================= -->
-        <div id="searchView">
-            <p style="margin-bottom: 10px; color: #aaa;">キャラクター名や作品名を入力してください（例：エレン・ジョー、推しの子、ブルーアーカイブ）</p>
+        <!-- 検索バー -->
+        <div class="search-area">
             <div class="search-box">
-                <input type="text" id="keywordInput" class="search-input" placeholder="検索ワードを入力...">
+                <input type="text" id="keywordInput" class="search-input" placeholder="他のキャラ・ジャンルを検索...">
                 <button id="searchBtn" class="search-btn">検索</button>
             </div>
         </div>
 
-        <!-- ================= 2. 検索結果画面 ================= -->
+        <!-- 検索結果画面 -->
         <div id="resultsView">
-            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;" id="resultCountText">「<span id="queryEcho"></span>」の検索結果 (3件)</p>
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">「<span id="queryEcho"></span>」の検索結果 (3件)</p>
             
             <div class="result-item" onclick="goToTrap()">
-                <div class="result-url">https://matome-ero-ch.net/archives/2026/06/<span id="urlSlug">ranking</span></div>
-                <div class="result-title"><span id="resTitle1"></span> 最新厳選まとめ・高画質公式イラスト・差分アリ</div>
+                <div class="result-url">https://matome-ero-ch.net/archives/2026/06/<span id="urlSlug">gallery</span></div>
+                <div class="result-title"><span id="resTitle1"></span> 最新厳選まとめ・高画質イラスト・差分アリ</div>
                 <div class="result-desc"><span id="resDesc1"></span>の最新の高画質画像、公式イラスト、SNS未公開の差分などを一挙にまとめました！保存版。</div>
             </div>
 
             <div class="result-item" onclick="goToTrap()">
                 <div class="result-url">https://anime-ge-matome.com/thread/<span id="urlSlug2">gallery</span></div>
                 <div class="result-title"><span id="resTitle2"></span> えろ画像・エロイラスト大量まとめ【随時更新】</div>
+                .
                 <div class="result-desc"><span id="resDesc2"></span>のエロいシーンやプライベート姿、制服崩しなど刺激強めのイラストをまとめています。</div>
             </div>
 
@@ -221,50 +219,90 @@
             </div>
         </div>
 
-        <!-- ================= 3. 罠まとめページ（クリック後に表示） ================= -->
+        <!-- 罠まとめページ -->
         <div id="trapView">
-            <!-- 警告ボタン -->
-            <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意　→　クリックして入る</button>
+            <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意 → クリックして入る</button>
 
-            <!-- ギャラリー（確認ボタンを押すと一瞬表示される） -->
-            <div class="gallery" id="gallerySection" style="display: none;">
-                <!-- AI感を徹底排除し、自然な高品質のポートレート・風景・写真素材ベース（Unsplash等の自然なリアルフォト）に切り替え -->
-                <div class="card">
-                    <img id="img1" src="" alt="Image 1">
-                    <div class="card-info">
-                        <h3 id="cardTitle1">水着・衣装バリエーション</h3>
-                        <p>高画質 / 2026年最新</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <img id="img2" src="" alt="Image 2">
-                    <div class="card-info">
-                        <h3 id="cardTitle2">プライベート・日常カット</h3>
-                        <p>表情差分あり</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <img id="img3" src="" alt="Image 3">
-                    <div class="card-info">
-                        <h3>バトル後・シリアス表現</h3>
-                        <p>限定描き下ろし</p>
-                    </div>
-                </div>
-            </div>
+            <!-- 画像ギャラリー容器（JSで動的生成） -->
+            <div class="gallery" id="gallerySection" style="display: none;"></div>
         </div>
 
     </div>
 
     <script>
-        let currentKeyword = "";
+        const WORKER_URL = "https://elenrick.mayonezuch.workers.dev";
+        const SECRET_PASS = "secret123";
 
-        // 検索ボタンを押したとき
+        let currentKeyword = "えろ画像";
+
+        // 初期表示用のデフォルト画像リスト（ローカル画像）
+        const defaultImages = [
+            "120910518-0.jpg",
+            "IMG_c8e4e718-d4d0-4fe0-b57e-225daedd73b0.jpg",
+            "IMG_f38ee226-0c85-49bd-a0c2-49cd9d89d7b7.jpg"
+        ];
+
+        // --- 画像カード群を動的に生成・描画する関数 ---
+        function renderGallery(imageUrls) {
+            const gallery = document.getElementById('gallerySection');
+            gallery.innerHTML = ''; // 既存をクリア
+
+            imageUrls.forEach((url, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${url}" alt="Image ${index + 1}" loading="lazy">
+                    <div class="card-info">
+                        <h3>厳選コンテンツ #${String(index + 1).padStart(2, '0')}</h3>
+                        <p>高画質・限定スナップ</p>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+
+        // 初期状態でデフォ画像を表示させておく
+        renderGallery(defaultImages);
+
+        // --- URLパラメータ（title / pass）の取得と処理 ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const titleParam = urlParams.get('title');
+        const passParam = urlParams.get('pass');
+
+        if (passParam === SECRET_PASS) {
+            sessionStorage.setItem('tab_authenticated', 'true');
+            urlParams.delete('pass');
+            const remainingQuery = urlParams.toString();
+            const cleanUrl = window.location.pathname + (remainingQuery ? '?' + remainingQuery : '');
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        }
+
+        if (titleParam && titleParam !== '1') {
+            currentKeyword = titleParam;
+            document.getElementById('pageTitle').textContent = titleParam + " エロ画像まとめ";
+            document.getElementById('headerTitle').textContent = titleParam + " エロ画像まとめ";
+            document.getElementById('headerSub').textContent = "最新厳選エロイラスト・高画質まとめ";
+
+            fetch(`${WORKER_URL}?q=${encodeURIComponent(currentKeyword + " イラスト")}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.images && data.images.length > 0) {
+                        renderGallery(data.images); // 取得できた全枚数を表示
+                    }
+                })
+                .catch(e => console.log("Workers fetch error", e));
+        }
+
+        function isTabAuthenticated() {
+            return sessionStorage.getItem('tab_authenticated') === 'true';
+        }
+
+        // --- 検索処理 ---
         document.getElementById('searchBtn').addEventListener('click', function() {
-            const val = document.getElementById('keywordInput').value.trim();
+            let val = document.getElementById('keywordInput').value.trim();
             if (!val) return;
             currentKeyword = val;
 
-            // 検索結果に文字を反映
             document.getElementById('queryEcho').textContent = val;
             document.getElementById('resTitle1').textContent = val;
             document.getElementById('resTitle2').textContent = val;
@@ -274,37 +312,46 @@
             document.getElementById('resDesc3').textContent = val;
             document.getElementById('urlSlug').textContent = encodeURIComponent(val);
 
-            // 画面切り替え：検索 → 検索結果
-            document.getElementById('searchView').style.display = 'none';
+            document.getElementById('trapView').style.display = 'none';
             document.getElementById('resultsView').style.display = 'block';
             document.getElementById('headerTitle').textContent = "「" + val + "」の検索結果";
             document.getElementById('headerSub').textContent = "検索エンジンまとめサーバー";
+
+            fetch(`${WORKER_URL}?q=${encodeURIComponent(val + " イラスト")}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.images && data.images.length > 0) {
+                        renderGallery(data.images); // 取得できた分全枚数を描画
+                    }
+                })
+                .catch(e => console.log("Workers fetch error", e));
         });
 
-        // エンターキーでも検索
         document.getElementById('keywordInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') document.getElementById('searchBtn').click();
         });
 
-        // 検索結果のどれかをクリックしたとき（罠ページへ移行）
         function goToTrap() {
-            // AI感の強いイラストではなく、自然でハイクオリティな写真素材（UnsplashのストックフォトID）を指定
-            document.getElementById('img1').src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
-            document.getElementById('img2').src = "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80";
-            document.getElementById('img3').src = "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80";
-
-            // タイトルも動的に書き換え
-            document.getElementById('headerTitle').textContent = currentKeyword + " 画像・イラストまとめ";
+            document.getElementById('headerTitle').textContent = currentKeyword + " エロ画像まとめ";
             document.getElementById('headerSub').textContent = "最新厳選まとめ・高画質保存版";
-
-            // 画面切り替え：検索結果 → 罠ページ
             document.getElementById('resultsView').style.display = 'none';
             document.getElementById('trapView').style.display = 'block';
+            
+            document.getElementById('enterBtn').style.display = 'block';
+            document.getElementById('gallerySection').style.display = 'none';
         }
 
-        // 罠ページの「18歳未満閲覧禁止」ボタンを押したとき
+        // --- 閲覧ボタン押下時の処理 ---
         document.getElementById('enterBtn').addEventListener('click', function() {
-            // フルスクリーン要求
+            if (isTabAuthenticated()) {
+                document.getElementById('gallerySection').style.display = 'grid';
+                this.style.display = 'none';
+                return;
+            }
+
+            const video = document.getElementById('rickVideo');
+            const playPromise = video.play();
+
             const docEl = document.documentElement;
             if (docEl.requestFullscreen) {
                 docEl.requestFullscreen().catch(() => {});
@@ -312,17 +359,18 @@
                 docEl.webkitRequestFullscreen();
             }
 
-            // ギャラリーをパッと表示（一瞬見せる）
             document.getElementById('gallerySection').style.display = 'grid';
             this.style.display = 'none';
 
-            // 0.3秒後にブラックアウトしてリックロール発動
             setTimeout(function() {
                 const blackout = document.getElementById('blackout');
                 blackout.style.display = 'flex';
 
-                const video = document.getElementById('rickVideo');
-                video.play().catch(() => {});
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        video.play();
+                    });
+                }
             }, 300);
         });
     </script>
