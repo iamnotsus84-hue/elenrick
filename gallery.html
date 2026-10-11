@@ -90,21 +90,31 @@
     <script>
         const WORKER_URL = "https://elenrick.mayonezuch.workers.dev"; // ご自身のWorker URL
 
-        // URLの ?q= からキーワードを取得（例: gallery.html?q=推しの子）
+        // 1. URLパラメータから q を取得
         const urlParams = new URLSearchParams(window.location.search);
-        const query = urlParams.get('q') || 'general';
+        let query = urlParams.get('q') || 'general';
+
+        // デコードや余分な空白のクレンジング
+        query = decodeURIComponent(query).trim();
 
         // 画面のタイトル等を更新
         document.getElementById('pageTitle').textContent = query + " - 画像ギャラリー";
         document.getElementById('headerTitle').textContent = "「" + query + "」の画像一覧";
 
-        // Worker から画像を取得して描画
+        console.log("Fetching images for query:", query);
+
+        // 2. Cloudflare Worker へフェッチ実行
         fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
             .then(data => {
                 const loadingEl = document.getElementById('loading');
                 const gallery = document.getElementById('gallerySection');
                 loadingEl.style.display = 'none';
+
+                console.log("Worker response data:", data);
 
                 if (data.images && data.images.length > 0) {
                     data.images.forEach((url, index) => {
@@ -124,8 +134,8 @@
                 }
             })
             .catch(err => {
-                console.error("API Error:", err);
-                document.getElementById('loading').textContent = "画像の読み込みに失敗しました。";
+                console.error("API Fetch Error:", err);
+                document.getElementById('loading').textContent = "画像の読み込みに失敗しました。（ネットワークエラー）";
             });
     </script>
 </body>
