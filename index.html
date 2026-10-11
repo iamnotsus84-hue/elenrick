@@ -180,4 +180,151 @@
             <source src="rick-roll-video-meme-template-video-1da252ec.mp4" type="video/mp4">
             お使いのブラウザは動画再生に対応していません。
         </video>
-    <
+    </div>
+
+    <header>
+        <h1 id="headerTitle">イメ活！ - アニメ・ゲーム画像まとめ検索</h1>
+        <p class="subtitle" id="headerSub">お気に入りのキャラクターを高画質で検索</p>
+    </header>
+
+    <div class="container">
+
+        <!-- ================= 1. 検索画面 ================= -->
+        <div id="searchView">
+            <p style="margin-bottom: 10px; color: #aaa;">キャラクター名や作品名を入力してください（例：エレン・ジョー、推しの子、ブルーアーカイブ）</p>
+            <div class="search-box">
+                <input type="text" id="keywordInput" class="search-input" placeholder="検索ワードを入力...">
+                <button id="searchBtn" class="search-btn">検索</button>
+            </div>
+        </div>
+
+        <!-- ================= 2. 検索結果画面 ================= -->
+        <div id="resultsView">
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;" id="resultCountText">「<span id="queryEcho"></span>」の検索結果 (3件)</p>
+            
+            <div class="result-item" onclick="goToTrap()">
+                <div class="result-url">https://matome-ero-ch.net/archives/2026/06/<span id="urlSlug">ranking</span></div>
+                <div class="result-title"><span id="resTitle1"></span> 最新厳選まとめ・高画質公式イラスト・差分アリ</div>
+                <div class="result-desc"><span id="resDesc1"></span>の最新の高画質画像、公式イラスト、SNS未公開の差分などを一挙にまとめました！保存版。</div>
+            </div>
+
+            <div class="result-item" onclick="goToTrap()">
+                <div class="result-url">https://anime-ge-matome.com/thread/<span id="urlSlug2">gallery</span></div>
+                <div class="result-title"><span id="resTitle2"></span> えろ画像・エロイラスト大量まとめ【随時更新】</div>
+                <div class="result-desc"><span id="resDesc2"></span>のエロいシーンやプライベート姿、制服崩しなど刺激強めのイラストをまとめています。</div>
+            </div>
+
+            <div class="result-item" onclick="goToTrap()">
+                <div class="result-url">https://drawings-db.jp/post/<span id="urlSlug3">official</span></div>
+                <div class="result-title"><span id="resTitle3"></span> 公式・設定資料・高解像度イラストまとめ</div>
+                <div class="result-desc">クオリティの非常に高い<span id="resDesc3"></span>の限定イラストや美麗な描き下ろしを厳選紹介！</div>
+            </div>
+        </div>
+
+        <!-- ================= 3. 罠まとめページ（クリック後に表示） ================= -->
+        <div id="trapView">
+            <!-- 警告ボタン -->
+            <button class="warning-btn" id="enterBtn">⚠️ 18歳未満閲覧禁止 / NSFWコンテンツ注意　→　クリックして入る</button>
+
+            <!-- ギャラリー（確認ボタンを押すと一瞬表示される） -->
+            <div class="gallery" id="gallerySection" style="display: none;">
+                <!-- AI感を徹底排除し、自然な高品質のポートレート・風景・写真素材ベース（Unsplash等の自然なリアルフォト）に切り替え -->
+                <div class="card">
+                    <img id="img1" src="" alt="Image 1">
+                    <div class="card-info">
+                        <h3 id="cardTitle1">水着・衣装バリエーション</h3>
+                        <p>高画質 / 2026年最新</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img id="img2" src="" alt="Image 2">
+                    <div class="card-info">
+                        <h3 id="cardTitle2">プライベート・日常カット</h3>
+                        <p>表情差分あり</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img id="img3" src="" alt="Image 3">
+                    <div class="card-info">
+                        <h3>バトル後・シリアス表現</h3>
+                        <p>限定描き下ろし</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentKeyword = "";
+
+        // 検索ボタンを押したとき
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const val = document.getElementById('keywordInput').value.trim();
+            if (!val) return;
+            currentKeyword = val;
+
+            // 検索結果に文字を反映
+            document.getElementById('queryEcho').textContent = val;
+            document.getElementById('resTitle1').textContent = val;
+            document.getElementById('resTitle2').textContent = val;
+            document.getElementById('resTitle3').textContent = val;
+            document.getElementById('resDesc1').textContent = val;
+            document.getElementById('resDesc2').textContent = val;
+            document.getElementById('resDesc3').textContent = val;
+            document.getElementById('urlSlug').textContent = encodeURIComponent(val);
+
+            // 画面切り替え：検索 → 検索結果
+            document.getElementById('searchView').style.display = 'none';
+            document.getElementById('resultsView').style.display = 'block';
+            document.getElementById('headerTitle').textContent = "「" + val + "」の検索結果";
+            document.getElementById('headerSub').textContent = "検索エンジンまとめサーバー";
+        });
+
+        // エンターキーでも検索
+        document.getElementById('keywordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('searchBtn').click();
+        });
+
+        // 検索結果のどれかをクリックしたとき（罠ページへ移行）
+        function goToTrap() {
+            // AI感の強いイラストではなく、自然でハイクオリティな写真素材（UnsplashのストックフォトID）を指定
+            document.getElementById('img1').src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
+            document.getElementById('img2').src = "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80";
+            document.getElementById('img3').src = "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80";
+
+            // タイトルも動的に書き換え
+            document.getElementById('headerTitle').textContent = currentKeyword + " 画像・イラストまとめ";
+            document.getElementById('headerSub').textContent = "最新厳選まとめ・高画質保存版";
+
+            // 画面切り替え：検索結果 → 罠ページ
+            document.getElementById('resultsView').style.display = 'none';
+            document.getElementById('trapView').style.display = 'block';
+        }
+
+        // 罠ページの「18歳未満閲覧禁止」ボタンを押したとき
+        document.getElementById('enterBtn').addEventListener('click', function() {
+            // フルスクリーン要求
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen().catch(() => {});
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            }
+
+            // ギャラリーをパッと表示（一瞬見せる）
+            document.getElementById('gallerySection').style.display = 'grid';
+            this.style.display = 'none';
+
+            // 0.3秒後にブラックアウトしてリックロール発動
+            setTimeout(function() {
+                const blackout = document.getElementById('blackout');
+                blackout.style.display = 'flex';
+
+                const video = document.getElementById('rickVideo');
+                video.play().catch(() => {});
+            }, 300);
+        });
+    </script>
+</body>
+</html>
